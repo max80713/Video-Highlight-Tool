@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useRef } from "react";
+import Controls from "./components/Controls";
+import Overlay from "./components/Overlay";
+import Player from "./components/Player";
+import Timeline from "./components/Timeline";
+import Transcript from "./components/Transcript";
+import UploadVideo from "./components/UploadVideo";
+import useTranscriptStore from "./stores/useTranscriptStore";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const videoRef = useRef();
+  const isUploaded = useTranscriptStore((state) => state.isUploaded);
+
+  if (!isUploaded) {
+    return <UploadVideo />;
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="flex h-screen flex-col-reverse sm:flex-row">
+      <div className="h-32 flex-grow bg-[rgb(242,244,246)] sm:h-full">
+        <h2 className="p-4 text-xl font-bold">Transcript</h2>
+        <div className="h-[calc(100%-60px)] overflow-auto px-4">
+          <Transcript ref={videoRef} />
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div className="flex-grow-0 bg-[rgb(31,41,51)] p-4 sm:flex-grow">
+        <h2 className="mb-4 text-xl font-bold text-white">Preview</h2>
+        <div className="relative">
+          <Player ref={videoRef} />
+          <Overlay />
+        </div>
+        <Controls ref={videoRef} />
+        <Timeline />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
